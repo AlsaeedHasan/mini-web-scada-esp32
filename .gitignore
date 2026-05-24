@@ -1,0 +1,8 @@
+# ESP-IDF specific
+build/
+sdkconfig
+sdkconfig.old
+
+# IDE specific
+.vscode/
+.clangd/
