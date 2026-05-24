@@ -43,17 +43,20 @@ main/
 Ensure you have the [ESP-IDF framework](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/get-started/) installed and set up on your machine.
 
 1. **Clone the repository:**
+
    ```bash
    git clone <repository_url>
    cd <repository_directory>
    ```
 
 2. **Set the target to ESP32:**
+
    ```bash
    idf.py set-target esp32
    ```
 
 3. **Build the project:**
+
    ```bash
    idf.py build
    ```
@@ -62,13 +65,15 @@ Ensure you have the [ESP-IDF framework](https://docs.espressif.com/projects/esp-
    ```bash
    idf.py flash monitor
    ```
-   *(Use `Ctrl+]` to safely exit the monitor)*
+   _(Use `Ctrl+]` to safely exit the monitor)_
 
 ## 🔮 Future Updates
 
 The project is continually evolving. Upcoming milestones include:
+
 - **Wi-Fi Station Mode**: Configuring the ESP32 to connect to a local network automatically.
 - **HTTP Web Server**: Implementing a lightweight embedded web server exposing endpoints to securely monitor sensor states and remotely control outputs over the network.
 
 ---
-*Developed by Alsaeed — Computer and Control Systems Engineering Student.*
+
+_Developed by Alsaeed — Computer and Control Systems Engineering Student._
