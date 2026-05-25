@@ -45,8 +45,8 @@ Ensure you have the [ESP-IDF framework](https://docs.espressif.com/projects/esp-
 1. **Clone the repository:**
 
    ```bash
-   git clone <repository_url>
-   cd <repository_directory>
+   git clone https://github.com/AlsaeedHasan/mini-web-scada-esp32.git mini-web-scada-esp32
+   cd mini-web-scada-esp32
    ```
 
 2. **Set the target to ESP32:**
