@@ -13,6 +13,7 @@ Currently, this repository features the core embedded application and custom bar
 - **Custom Bare-Metal Drivers**: Interfaces with shift registers using efficient bit-banging (`shift_registers.c`), bypassing slow abstracted APIs for higher performance and footprint reduction.
 - **FreeRTOS Concurrency**: Entirely non-blocking architecture relying on FreeRTOS tasks. Features dedicated tasks for polling inputs (`sensors_task`) and driving outputs (`leds_task`).
 - **Thread-safe Data Passing**: Communication between the distinct FreeRTOS tasks is properly managed using a FreeRTOS `Queue` (FIFO).
+- **SoftAP Wi-Fi Provisioning**: Utilizes the ESP-IDF `network_provisioning` component and FreeRTOS `Event Groups` for synchronization. The system seamlessly receives network credentials via a mobile app while the offline SCADA hardware tasks continue running in a non-blocking manner.
 - **Hardware Protection**: Robust power supply design mapping 3.3V logic to higher voltage output loads seamlessly.
 
 ## 🛠️ Hardware Requirements & Architecture
@@ -32,10 +33,11 @@ This project enforces a clean separation of hardware initialization, bare-metal 
 main/
 ├── CMakeLists.txt        # Build system configuration
 ├── main.c                # Application entry point and FreeRTOS task creation
+├── pd_wifi.c             # Wi-Fi SoftAP provisioning and network event handling
 ├── pins.c                # Hardware pin definitions and low-level GPIO setup
 ├── shift_registers.c     # Bare-metal drivers for 74HC595 and 74HC165
 ├── tasks.c               # FreeRTOS task implementations (sensors_task, leds_task)
-└── include/              # Header files (bitwise.h, etc.)
+└── include/              # Header files (bitwise.h, pd_wifi.h, etc.)
 ```
 
 ## 🚀 Getting Started (How to Build)
@@ -71,7 +73,6 @@ Ensure you have the [ESP-IDF framework](https://docs.espressif.com/projects/esp-
 
 The project is continually evolving. Upcoming milestones include:
 
-- **Wi-Fi Station Mode**: Configuring the ESP32 to connect to a local network automatically.
 - **HTTP Web Server**: Implementing a lightweight embedded web server exposing endpoints to securely monitor sensor states and remotely control outputs over the network.
 
 ---
