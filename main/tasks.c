@@ -3,6 +3,7 @@
 #include "freertos/task.h"
 #include "shift_registers.h"
 #include "tasks.h"
+// #include "pd_wifi.h"
 
 QueueHandle_t data_queue;
 
@@ -12,6 +13,8 @@ void sensors_task(void *pvParameters)
 
     while (1)
     {
+        // xEventGroupWaitBits(wifi_event_group, WIFI_CONNECTED_BIT, pdFALSE, pdPASS, portMAX_DELAY);
+
         switches_state = shift_in();
 
         xQueueSend(data_queue, &switches_state, 0);

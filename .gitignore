@@ -1,7 +1,10 @@
 # ESP-IDF specific
 build/
+components/
+managed_components/
 sdkconfig
 sdkconfig.old
+idf_component.yml
 
 # IDE specific
 .vscode/
