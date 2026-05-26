@@ -2,6 +2,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
+#include "freertos/semphr.h"
 #include "bitwise.h"
 #include "pins.h"
 #include "shift_registers.h"
@@ -14,7 +15,9 @@ void app_main(void)
 
     data_queue = xQueueCreate(5, sizeof(uint8_t));
 
-    if (data_queue != NULL && wifi_event_group != NULL)
+    state_mutex = xSemaphoreCreateMutex();
+
+    if (data_queue != NULL && wifi_event_group != NULL && state_mutex != NULL)
     {
         wifi_init_basic();
         start_network_provisioning();

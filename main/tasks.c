@@ -3,21 +3,26 @@
 #include "freertos/task.h"
 #include "shift_registers.h"
 #include "tasks.h"
+#include "freertos/semphr.h"
 // #include "pd_wifi.h"
 
 QueueHandle_t data_queue;
+uint8_t switches_state = 0;
+SemaphoreHandle_t state_mutex = NULL;
 
 void sensors_task(void *pvParameters)
 {
-    uint8_t switches_state = 0;
-
     while (1)
     {
         // xEventGroupWaitBits(wifi_event_group, WIFI_CONNECTED_BIT, pdFALSE, pdPASS, portMAX_DELAY);
 
-        switches_state = shift_in();
+        uint8_t temp_switches_state = shift_in();
 
-        xQueueSend(data_queue, &switches_state, 0);
+        if (xSemaphoreTake(state_mutex, pdMS_TO_TICKS(10)) == pdTRUE)
+        {
+            switches_state = temp_switches_state;
+            xSemaphoreGive(state_mutex);
+        }
 
         vTaskDelay(pdMS_TO_TICKS(100));
     }

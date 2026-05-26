@@ -6,7 +6,7 @@
 
 A lightweight, web-oriented SCADA (Supervisory Control and Data Acquisition) node built around the ESP32 microcontroller and the ESP-IDF framework. This project bridges hardware design with software engineering by reading physical inputs and controlling outputs via a web interface, orchestrated entirely by a non-blocking FreeRTOS architecture.
 
-Currently, this repository features the core embedded application and custom bare-metal drivers, with a full web server implementation planned for future stages.
+This repository features the core embedded application, custom bare-metal drivers, and an embedded HTTP web server for RESTful control and monitoring of hardware.
 
 ## 🌟 Features
 
@@ -14,6 +14,9 @@ Currently, this repository features the core embedded application and custom bar
 - **FreeRTOS Concurrency**: Entirely non-blocking architecture relying on FreeRTOS tasks. Features dedicated tasks for polling inputs (`sensors_task`) and driving outputs (`leds_task`).
 - **Thread-safe Data Passing**: Communication between the distinct FreeRTOS tasks is properly managed using a FreeRTOS `Queue` (FIFO).
 - **SoftAP Wi-Fi Provisioning**: Utilizes the ESP-IDF `network_provisioning` component and FreeRTOS `Event Groups` for synchronization. The system seamlessly receives network credentials via a mobile app while the offline SCADA hardware tasks continue running in a non-blocking manner.
+- **Embedded HTTP Web Server**: Integrates `esp_http_server` that automatically starts upon successful Wi-Fi provisioning and IP acquisition.
+- **RESTful API & JSON**: Exposes a `GET /api/status` endpoint to monitor real-time sensor states and a `POST /api/control` endpoint to adjust physical outputs via JSON payloads (safely parsed using `cJSON`).
+- **Mutex Synchronization**: Employs a FreeRTOS `SemaphoreHandle_t` (Mutex) to secure the shared `sensors_state` variable, eliminating race conditions between the high-frequency bare-metal `sensors_task` and the asynchronous HTTP handlers.
 - **Hardware Protection**: Robust power supply design mapping 3.3V logic to higher voltage output loads seamlessly.
 
 ## 🛠️ Hardware Requirements & Architecture
@@ -33,11 +36,13 @@ This project enforces a clean separation of hardware initialization, bare-metal 
 main/
 ├── CMakeLists.txt        # Build system configuration
 ├── main.c                # Application entry point and FreeRTOS task creation
+├── endpoints.c           # RESTful API endpoint handlers for GET and POST requests
 ├── pd_wifi.c             # Wi-Fi SoftAP provisioning and network event handling
 ├── pins.c                # Hardware pin definitions and low-level GPIO setup
+├── server.c              # Embedded HTTP server initialization and routing logic
 ├── shift_registers.c     # Bare-metal drivers for 74HC595 and 74HC165
 ├── tasks.c               # FreeRTOS task implementations (sensors_task, leds_task)
-└── include/              # Header files (bitwise.h, pd_wifi.h, etc.)
+└── include/              # Header files (bitwise.h, pd_wifi.h, server.h, etc.)
 ```
 
 ## 🚀 Getting Started (How to Build)
@@ -71,9 +76,10 @@ Ensure you have the [ESP-IDF framework](https://docs.espressif.com/projects/esp-
 
 ## 🔮 Future Updates
 
-The project is continually evolving. Upcoming milestones include:
+The project is continually evolving. With the backend and web server complete, upcoming milestones may include:
 
-- **HTTP Web Server**: Implementing a lightweight embedded web server exposing endpoints to securely monitor sensor states and remotely control outputs over the network.
+- **Web Frontend Dashboard**: Designing a sleek, responsive frontend UI (HTML/CSS/JS) to interact with the REST API visually without raw JSON.
+- **WebSockets Integration**: Transitioning from polling to real-time, bi-directional communication for instantaneous state updates.
 
 ---
 

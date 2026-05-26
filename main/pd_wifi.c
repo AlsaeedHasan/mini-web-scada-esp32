@@ -1,5 +1,5 @@
 #include "pd_wifi.h"
-
+#include "server.h"
 #include "nvs_flash.h"
 #include "esp_netif.h"
 #include "network_provisioning/manager.h"
@@ -83,5 +83,10 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base,
         ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
         printf("Got IP: " IPSTR "\n", IP2STR(&event->ip_info.ip));
         printf("Wi-Fi Connected and Ready!\n");
+
+        if (server == NULL)
+        {
+            start_webserver();
+        }
     }
 }
