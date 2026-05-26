@@ -12,6 +12,8 @@ httpd_handle_t start_webserver(void)
     {
         printf("Server started successfully on port: %d\n", config.server_port);
 
+        httpd_register_uri_handler(server, &root_uri);
+        httpd_register_uri_handler(server, &ws_uri);
         httpd_register_uri_handler(server, &status_uri);
         httpd_register_uri_handler(server, &control_uri);
 

@@ -15,7 +15,10 @@ This repository features the core embedded application, custom bare-metal driver
 - **Thread-safe Data Passing**: Communication between the distinct FreeRTOS tasks is properly managed using a FreeRTOS `Queue` (FIFO).
 - **SoftAP Wi-Fi Provisioning**: Utilizes the ESP-IDF `network_provisioning` component and FreeRTOS `Event Groups` for synchronization. The system seamlessly receives network credentials via a mobile app while the offline SCADA hardware tasks continue running in a non-blocking manner.
 - **Embedded HTTP Web Server**: Integrates `esp_http_server` that automatically starts upon successful Wi-Fi provisioning and IP acquisition.
-- **RESTful API & JSON**: Exposes a `GET /api/status` endpoint to monitor real-time sensor states and a `POST /api/control` endpoint to adjust physical outputs via JSON payloads (safely parsed using `cJSON`).
+- **Embedded Dashboard**: The HTML/CSS/JS frontend is now fully embedded into the ESP32 flash memory using CMake's `EMBED_TXTFILES` and is served via the root `/` handler, eliminating the need for an external file system.
+- **WebSockets Integration**: Replaced the HTTP polling mechanism (`GET /api/status`) with a bidirectional WebSocket channel (`/ws`) for real-time, instantaneous state updates.
+- **RESTful API & JSON**: Exposes a `POST /api/control` endpoint to adjust physical outputs via JSON payloads (safely parsed using `cJSON`).
+- **Asynchronous Broadcast**: Implemented `httpd_queue_work` to safely push hardware state changes from the FreeRTOS `sensors_task` directly to the web server's thread, preventing any Thread-Safety or Race Condition issues.
 - **Mutex Synchronization**: Employs a FreeRTOS `SemaphoreHandle_t` (Mutex) to secure the shared `sensors_state` variable, eliminating race conditions between the high-frequency bare-metal `sensors_task` and the asynchronous HTTP handlers.
 - **Hardware Protection**: Robust power supply design mapping 3.3V logic to higher voltage output loads seamlessly.
 
@@ -34,14 +37,16 @@ This project enforces a clean separation of hardware initialization, bare-metal 
 
 ```text
 main/
-├── CMakeLists.txt        # Build system configuration
+├── CMakeLists.txt        # Build system configuration (includes EMBED_TXTFILES)
 ├── main.c                # Application entry point and FreeRTOS task creation
-├── endpoints.c           # RESTful API endpoint handlers for GET and POST requests
+├── endpoints.c           # WebSockets handlers and REST API endpoints (POST /api/control)
 ├── pd_wifi.c             # Wi-Fi SoftAP provisioning and network event handling
 ├── pins.c                # Hardware pin definitions and low-level GPIO setup
-├── server.c              # Embedded HTTP server initialization and routing logic
+├── server.c              # Embedded HTTP server, serving embedded dashboard at root /
 ├── shift_registers.c     # Bare-metal drivers for 74HC595 and 74HC165
 ├── tasks.c               # FreeRTOS task implementations (sensors_task, leds_task)
+├── workers.c             # Asynchronous broadcast workers (httpd_queue_work)
+├── web/                  # Embedded HTML/CSS/JS dashboard source files
 └── include/              # Header files (bitwise.h, pd_wifi.h, server.h, etc.)
 ```
 
@@ -76,10 +81,7 @@ Ensure you have the [ESP-IDF framework](https://docs.espressif.com/projects/esp-
 
 ## 🔮 Future Updates
 
-The project is continually evolving. With the backend and web server complete, upcoming milestones may include:
-
-- **Web Frontend Dashboard**: Designing a sleek, responsive frontend UI (HTML/CSS/JS) to interact with the REST API visually without raw JSON.
-- **WebSockets Integration**: Transitioning from polling to real-time, bi-directional communication for instantaneous state updates.
+The project is continually evolving. With the backend, real-time WebSockets, and embedded dashboard complete, further performance optimizations and enhancements are planned for future milestones.
 
 ---
 
